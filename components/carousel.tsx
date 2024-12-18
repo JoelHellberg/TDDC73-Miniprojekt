@@ -1,11 +1,31 @@
-import { Text, View, Image, StyleSheet } from "react-native";
+import { Text, View, Image, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 
 export default function Carousel() {
+
+  const IMAGES = [
+    {
+      url : 'https://reactnative.dev/img/tiny_logo.png'
+    },
+    {
+      url : 'https://reactnative.dev/img/tiny_logo.png'
+    },
+    {
+      url : 'https://reactnative.dev/img/tiny_logo.png'
+    },
+  ];
+
   return (
     <View>
-      <Image
-       
-          source={{ uri: 'https://reactnative.dev/img/tiny_logo.png',}}/>
+      <FlatList
+      horizontal
+      data={IMAGES}
+      renderItem={({item}) => (
+        <TouchableOpacity>
+          <Image
+        style={styles.tinyLogo}
+        source={{ uri: item.url,}}/>
+        </TouchableOpacity>
+    )}/>
     </View>
   );
 }
