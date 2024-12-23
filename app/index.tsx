@@ -11,7 +11,7 @@ export default function Index() {
         alignItems: "center",*/
       }}
     >
-      <Text>"Carousel" SDK testas nedanför:</Text>
+     <Text>"Carousel" SDK testas nedanför:</Text>
       <Carousel/>
       <PasswordStrengthMeter/>
     </View>
