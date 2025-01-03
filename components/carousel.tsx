@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, View, Image, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { View, Image, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 
 type displayedImage = {
   posInIndex: number,
@@ -7,21 +7,18 @@ type displayedImage = {
   url: string
 };
 
-export default function Carousel() {
-  const IMAGES = ['https://reactnative.dev/img/tiny_logo.png',
+type urls = string[];
 
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/768px-React-icon.svg.png',
+type CarouselProps = {
+  IMAGES: urls;
+  orientation?: string; // Make it optional
+  imagesOnDisplay?: number
+};
 
-    'https://reactnative.dev/img/tiny_logo.png',
-
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/768px-React-icon.svg.png',
-
-    'https://reactnative.dev/img/tiny_logo.png',
-
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/768px-React-icon.svg.png']
+export default function Carousel({ IMAGES, orientation, imagesOnDisplay = 5 }:
+  CarouselProps) {
 
   const [displayedImages, changeDisplayedImages] = useState<displayedImage[]>([]);
-  const imagesOnDisplay = 5;
 
   const rotateCarousel = (input: number) => {
     let images: displayedImage[] = [];
@@ -59,21 +56,31 @@ export default function Carousel() {
 
 
   return (
-    <View style={{ overflow: 'visible' }}>
+    <View style={{ overflow: 'hidden' }}>
       <FlatList
         horizontal
         data={displayedImages}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={{
-              marginHorizontal: item.distanceFromCenter !== 0 ? 0 : -10,
-              marginVertical: item.distanceFromCenter !== 0 ? 4 : -4,
               zIndex: -Math.abs(item.distanceFromCenter),
             }}
             onPress={() => rotateCarousel(item.posInIndex)}
           >
             <Image
-              style={styles.tinyLogo}
+              style={[
+                item.distanceFromCenter == 0 ?
+                  orientation == "landscape" ? styles.focusedLandscapeImage
+                    : orientation == "portrait" ? styles.focusedPortraitImage
+                      : styles.focusedSquareImage
+                  : [
+                    orientation == "landscape" ? styles.landscapeImage
+                      : orientation == "portrait" ? styles.portraitImage
+                        : styles.squareImage,
+                    { top: 10 }],
+                { borderRadius: 5, margin: 3 }]
+
+              }
               source={{ uri: item.url }}
             />
           </TouchableOpacity>
@@ -88,12 +95,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  tinyLogo: {
+
+  focusedSquareImage: {
+    width: 70,
+    height: 70,
+  },
+  squareImage: {
     width: 50,
     height: 50,
   },
-  logo: {
-    width: 66,
-    height: 58,
+
+  focusedLandscapeImage: {
+    width: 120,
+    height: 70,
+  },
+  landscapeImage: {
+    width: 100,
+    height: 50,
+  },
+
+  focusedPortraitImage: {
+    width: 70,
+    height: 120,
+  },
+  portraitImage: {
+    width: 50,
+    height: 100,
   },
 });
