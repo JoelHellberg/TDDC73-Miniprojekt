@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Carousel from "@/components/carousel";
 import PasswordStrengthMeter from "@/components/passwordStrengthMeter";
 
@@ -21,21 +21,17 @@ export default function Index() {
   ];
 
   return (
-    <View
-      style={{/*
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",*/
-      }}
-    >
-      <Text>"Carousel" SDK testas nedanför:</Text>
-      <View style={{ margin: "auto" }}>
+    <View>
+      <View style={{ alignItems: "center" }}>
+        <h2>Carousel</h2>
         <Carousel
           IMAGES={IMAGES}
           orientation="portrait"
-          imagesOnDisplay={7}
+          imagesOnEachSide={3}
+          imageWidth={50}
         />
       </View>
+
       <PasswordStrengthMeter />
     </View>
   );

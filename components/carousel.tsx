@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Image, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { View, Image, FlatList, TouchableOpacity } from "react-native";
 
 type displayedImage = {
   posInIndex: number,
@@ -7,32 +7,52 @@ type displayedImage = {
   url: string
 };
 
-type urls = string[];
-
 type CarouselProps = {
-  IMAGES: urls;
-  orientation?: string; // Make it optional
-  imagesOnDisplay?: number
+  IMAGES: string[];
+  // '?' makes the properties optional
+  orientation?: string;
+  imagesOnEachSide?: number;
+  imageWidth?: number;
 };
 
-export default function Carousel({ IMAGES, orientation, imagesOnDisplay = 5 }:
+export default function Carousel({ IMAGES, orientation, imagesOnEachSide = 2, imageWidth = 50 }:
   CarouselProps) {
-
+  let imagesOnDisplay = imagesOnEachSide * 2 + 1;
   const [displayedImages, changeDisplayedImages] = useState<displayedImage[]>([]);
 
+  // Calculate the image height based on the orientation & width
+  let imageHeight = imageWidth
+  if (orientation == "landscape") {
+    imageHeight = imageWidth / 2;
+  }
+  else if (orientation == "portrait") {
+    imageHeight = imageWidth * 2;
+  }
+  // Determine the dimensions of the focused image based on 
+  // the dimensions of the non-focused images
+  const focusedImageWidth = imageWidth + imageWidth / 3;
+  const focusedImageHeight = imageHeight + imageHeight / 3;
+  // Calculate how far down to move the non-centered images to
+  // vertically align with the focused image
+  const nonFocusedHeightMargin = (focusedImageHeight - imageHeight) / 2;
+
+  // Function that repositions all the images on display
   const rotateCarousel = (input: number) => {
     let images: displayedImage[] = [];
-    const imagesOnEachSide = (imagesOnDisplay - 1) / 2;
 
+    // Redefine the images on display (starting from the left)
     for (let i = 0; i < imagesOnDisplay; i++) {
 
       const distanceFromCenter = imagesOnEachSide - i;
       let posInIndex = input - distanceFromCenter;
 
-      if (posInIndex < 0) {
-        posInIndex = posInIndex + IMAGES.length;
-      } else if (posInIndex > IMAGES.length - 1) {
+      // If the image pos exceeds the array, start from the beginning
+      if (posInIndex > IMAGES.length - 1) {
         posInIndex = posInIndex - IMAGES.length;
+      }
+      // If the image pos is lower than 0, start from the end and go back
+      else if (posInIndex < 0) {
+        posInIndex = posInIndex + IMAGES.length;
       }
 
       images.push(
@@ -49,77 +69,38 @@ export default function Carousel({ IMAGES, orientation, imagesOnDisplay = 5 }:
 
   // Use useEffect to call the function once on the component mount
   useEffect(() => {
-    const centerImageIndex = Math.round((imagesOnDisplay) / 2) - 1;
-    rotateCarousel(centerImageIndex); // Example: calling the function with input 0
-  }, []); // Empty dependency array to run only on mount
-
+    // Put the image in the middle of the array as the starting center image
+    const centerImageIndex = Math.round((IMAGES.length) / 2) - 1;
+    rotateCarousel(centerImageIndex);
+  }, []);
 
 
   return (
     <View style={{ overflow: 'hidden' }}>
+      {/* Position all images in a 'FlatList' */}
       <FlatList
         horizontal
         data={displayedImages}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={{
-              zIndex: -Math.abs(item.distanceFromCenter),
-            }}
-            onPress={() => rotateCarousel(item.posInIndex)}
-          >
+
+          <TouchableOpacity onPress={() => rotateCarousel(item.posInIndex)}>
+            {/* Each Individual Image */}
             <Image
               style={[
                 item.distanceFromCenter == 0 ?
-                  orientation == "landscape" ? styles.focusedLandscapeImage
-                    : orientation == "portrait" ? styles.focusedPortraitImage
-                      : styles.focusedSquareImage
-                  : [
-                    orientation == "landscape" ? styles.landscapeImage
-                      : orientation == "portrait" ? styles.portraitImage
-                        : styles.squareImage,
-                    { top: 10 }],
+                  // Apply different styles for the focused image and non-focused images
+                  { width: focusedImageWidth, height: focusedImageHeight }
+                  : { width: imageWidth, height: imageHeight, top: nonFocusedHeightMargin },
                 { borderRadius: 5, margin: 3 }]
 
               }
               source={{ uri: item.url }}
             />
           </TouchableOpacity>
+
         )}
       />
     </View>
   );
 
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-
-  focusedSquareImage: {
-    width: 70,
-    height: 70,
-  },
-  squareImage: {
-    width: 50,
-    height: 50,
-  },
-
-  focusedLandscapeImage: {
-    width: 120,
-    height: 70,
-  },
-  landscapeImage: {
-    width: 100,
-    height: 50,
-  },
-
-  focusedPortraitImage: {
-    width: 70,
-    height: 120,
-  },
-  portraitImage: {
-    width: 50,
-    height: 100,
-  },
-});
