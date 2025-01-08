@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View,Text, StyleSheet } from "react-native";
 import Carousel from "@/components/carousel";
 import PasswordStrengthMeter from "@/components/passwordStrengthMeter";
 
@@ -21,9 +21,9 @@ export default function Index() {
   ];
 
   return (
-    <View>
+    <View style = {styles.Componentcontainer}>
       <View style={{ alignItems: "center" }}>
-        <h2>Carousel</h2>
+        <Text>Carousel</Text>
         <Carousel
           IMAGES={IMAGES}
           orientation="portrait"
@@ -36,3 +36,14 @@ export default function Index() {
     </View>
   );
 }
+
+
+  const styles = StyleSheet.create({
+      Componentcontainer: {
+        flex:1, //Fyll hela sidan (Inte bara bakgrunden bakom komponenterna)
+        backgroundColor: '#d3d3d3', // Ljusgrå färg (hex-kod)
+      },
+    });
+
+
+
