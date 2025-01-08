@@ -33,7 +33,7 @@ export default function PasswordStrengthMeter() {
             if (input.length < 8) {
                 feedback.push("The password must be at least 8 characters long.");
             } else {
-                if (!/[A-Z]/.test(input) && !/[0-9]/.test(input) && !/[^A-Za-z0-9]/.test(input)) {
+                if (!/[A-Z]/.test(input)) {
 
                     feedback.push("Add at least one uppercase letter.");
                 }
