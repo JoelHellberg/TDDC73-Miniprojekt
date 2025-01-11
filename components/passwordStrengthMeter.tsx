@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TextInput } from "react-native";
+import { Text, View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function PasswordStrengthMeter() {
     const [password, setPassword] = useState<string>(''); // Typ för lösenord
     const [strength, setStrength] = useState<number>(0);  // Typ för styrka
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     // Funktion för att utvärdera styrkan på lösenordet
     const evaluateStrength = (input: string): number => {
+
+        //Standardvärde
         let score = 1;
 
-
+        //Adder till score när ett krav är uppfyllt
         if (input.length >= 8) {
             if (/[A-Z]/.test(input)) score += 1; // Stora bokstäver
             if (/[0-9]/.test(input)) score += 1; // Siffror
@@ -29,10 +33,11 @@ export default function PasswordStrengthMeter() {
             //Array för feedbacktexten
             const feedback = [];
             
-
             if (input.length < 8) {
+                //För feedback måste lösenordet vara minst 8 tecken långt
                 feedback.push("The password must be at least 8 characters long.");
             } else {
+                //Om lösenordet är > 8 tecken ges feedback på vad som saknas
                 if (!/[A-Z]/.test(input)) {
 
                     feedback.push("Add at least one uppercase letter.");
@@ -48,21 +53,28 @@ export default function PasswordStrengthMeter() {
                     return "Good job! You created a very strong password!";
                 }
             }
-        
+            
+            //Gör en lång sträng av den fyllda feedback-arrayen
             return feedback.join(" ");
         }
 
+    //Uppdaterar värdet om lösenordet ska visas/döljas
+    const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
 
     // Uppdaterar lösenord och styrka direkt vid textändring
     const handlePasswordChange = (input: string): void => {
         setPassword(input);
+
+        //Evaluera lösenordet
         setStrength(evaluateStrength(input));
     };
 
     // Funktion för att bestämma färgen på baren
     const getStrengthColor = (): string => {
         switch (strength) {
-            case 1: return 'gray';
+            case 1: return 'gray'; //Om användare börjat skriva men lösenordet är mindre än 8 tecken
             case 2: return 'red';
             case 3: return 'orange';
             case 4: return 'yellow';
@@ -74,23 +86,43 @@ export default function PasswordStrengthMeter() {
 
     return (
         
+        //Huvudcontainer för komponenten
         <View style={styles.container}>
+
+            { /*Titel*/}
             <Text style={styles.title}>Password Strength Meter</Text>
+
+            { /*Fältet för att skriva in lösenord*/}
             <TextInput
                 style={styles.textInput}
                 placeholder="Write your password"
                 placeholderTextColor="grey"
                 value={password}
                 onChangeText={handlePasswordChange} // Uppdaterar lösenord och styrka
-                secureTextEntry={false} //Döljer lösenordet
-            />
+                secureTextEntry={!isPasswordVisible}           
+                 />
 
+         { /*Knappen för att visa/dölja lösenordet*/}
+        <TouchableOpacity onPress={togglePasswordVisibility} style={styles.icon}>
+          <MaterialIcons
+            name={isPasswordVisible ? 'visibility' : 'visibility-off'}
+            size={24}
+            color="grey"
+          />
+        </TouchableOpacity>
+
+        { /*Container för feedback*/}
 <View style = {styles.feedbackTextContainer}>
+
+        { /*Text för feedbackstatus*/}
 <Text style = {styles.feedbackText}>{evaluateFeedback(password)}</Text>
 
 </View>
+        { /*Container för respons av lösenordets styrka*/}
         <View style = {styles.feedbackStrenghtContainer}>
             <Text style = {styles.feedbackStatus}>Password strength: </Text>
+
+            { /*Textresponsen för hur starkt lösenorder är*/}
              <Text style={[styles.feedbackStatus, { color: getStrengthColor() }]}>
                     {strength === 1
                     ? "Too short"
@@ -106,6 +138,7 @@ export default function PasswordStrengthMeter() {
             </Text>
             </View>
 
+            { /*Baren som visualiserar styrkan*/}
             <View style={styles.strengthContainer}>
                 <View
                     style={[
@@ -177,5 +210,8 @@ const styles = StyleSheet.create({
       feedbackStrenghtContainer:{
         flexDirection: 'row',
         alignItems: 'center',
-      }
+      },
+        icon: {
+    marginLeft: 10,
+  },
 });
