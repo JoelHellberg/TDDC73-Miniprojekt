@@ -76,27 +76,29 @@ export default function Carousel({ IMAGES, orientation, imagesOnEachSide = 2, im
 
 
   return (
-    <View style={{ overflow: 'hidden' }}>
+    <View style={{ overflow: 'hidden', height: focusedImageHeight + 6 }}>
       {/* Position all images in a 'FlatList' */}
       <FlatList
         horizontal
         data={displayedImages}
         renderItem={({ item }) => (
+          <View style={{ margin: 3 }}>
+            <TouchableOpacity onPress={() => rotateCarousel(item.posInIndex)} style={{ height: imageHeight }}>
+              {/* Each Individual Image */}
+              <Image
+                style={[
+                  item.distanceFromCenter == 0 ?
+                    // Apply different styles for the focused image and non-focused images
+                    { width: focusedImageWidth, height: focusedImageHeight }
+                    : { width: imageWidth, height: imageHeight, top: nonFocusedHeightMargin },
+                  { borderRadius: 5 }]
 
-          <TouchableOpacity onPress={() => rotateCarousel(item.posInIndex)}>
-            {/* Each Individual Image */}
-            <Image
-              style={[
-                item.distanceFromCenter == 0 ?
-                  // Apply different styles for the focused image and non-focused images
-                  { width: focusedImageWidth, height: focusedImageHeight }
-                  : { width: imageWidth, height: imageHeight, top: nonFocusedHeightMargin },
-                { borderRadius: 5, margin: 3 }]
+                }
+                source={{ uri: item.url }}
+              />
+            </TouchableOpacity>
+          </View>
 
-              }
-              source={{ uri: item.url }}
-            />
-          </TouchableOpacity>
 
         )}
       />
