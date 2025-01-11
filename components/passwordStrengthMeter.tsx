@@ -19,8 +19,6 @@ export default function PasswordStrengthMeter() {
             if (/[0-9]/.test(input)) score += 1; // Siffror
             if (/[^A-Za-z0-9]/.test(input)) score += 1; // Specialtecken
             score += 1; // Baspoäng för att lösenordet är minst 8 tecken långt
-        } else {
-            score = 0; // Ingen poäng om lösenordet är kortare än 8 tecken
         }
 
         // Om användaren börjar skriva, minst svag styrka (1)
